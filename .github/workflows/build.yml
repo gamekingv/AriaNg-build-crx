@@ -39,6 +39,7 @@ jobs:
         run: |
           node parse.js
           mv manifest.json ./source
+          mv background.js ./source
           mv combine-video.js ./source/js
 
       # 打包扩展
