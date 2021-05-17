@@ -5,11 +5,9 @@ const { promisify } = require('util');
 const stream = require('stream');
 const pipeline = promisify(stream.pipeline);
 
-const repository = 'gamekingv/AriaNg-build-crx';
-
 const {
   GITHUB_RUN_ID: run_id,
-  // GITHUB_REPOSITORY: repository,
+  GITHUB_REPOSITORY: repository,
   GITHUB_TOKEN: token
 } = process.env;
 
