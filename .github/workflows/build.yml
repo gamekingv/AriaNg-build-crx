@@ -37,7 +37,7 @@ jobs:
         run: |
           node parse.js
           mv manifest.json ./source
-          mv manifest.json ./source/js
+          mv combine-video.js ./source/js
 
       # 打包扩展
       - name: Pack ZIP
