@@ -57,12 +57,12 @@ async function cancelWorkflow() {
     const downloadURL = asset.browser_download_url;
     await pipeline(
       got.stream(downloadURL),
-      fs.createWriteStream('sources.zip')
+      fs.createWriteStream('source.zip')
     );
-    const manifest = JSON.parse(await fsp.readFile('source/manifest.json'));
+    const manifest = JSON.parse(await fsp.readFile('manifest.json'));
     manifest.update_url = `https://github.com/${repository}/releases/latest/download/update.xml`;
     manifest.version = sourceRelease.tag_name;
-    await fsp.writeFile('source/manifest.json', JSON.stringify(manifest, null, 2));
+    await fsp.writeFile('manifest.json', JSON.stringify(manifest, null, 2));
   }
   catch (error) {
     console.log(error);

@@ -29,13 +29,15 @@ jobs:
       # 解压
       - name: Decompression
         run: |
-          lsar 'sources.zip'
-          unar 'sources.zip'
+          lsar 'source.zip'
+          unar 'source.zip'
 
       # 处理文件
       - name: Parse
         run: |
           node parse.js
+          mv manifest.json ./source
+          mv manifest.json ./source/js
 
       # 打包扩展
       - name: Pack ZIP
