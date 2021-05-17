@@ -46,7 +46,7 @@ async function cancelWorkflow() {
     catch (error) {
       if (!error.response || error.response.statusCode !== 404) throw error;
     }
-    if (sourceRelease.tag_name === release.tag_name) {
+    if (`v${sourceRelease.tag_name}` === release.tag_name) {
       await cancelWorkflow();
       await new Promise(res => setTimeout(() => res(), 60000));
     }
