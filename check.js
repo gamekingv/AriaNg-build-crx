@@ -57,7 +57,7 @@ async function cancelWorkflow() {
     const downloadURL = asset.browser_download_url;
     await pipeline(
       got.stream(downloadURL),
-      fs.createWriteStream('source.zip')
+      fs.createWriteStream('sources.zip')
     );
     const manifest = JSON.parse(await fsp.readFile('source/manifest.json'));
     manifest.update_url = `https://github.com/${repository}/releases/latest/download/update.xml`;
