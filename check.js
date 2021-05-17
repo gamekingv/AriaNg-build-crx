@@ -7,9 +7,11 @@ const pipeline = promisify(stream.pipeline);
 
 const {
   GITHUB_RUN_ID: run_id,
-  GITHUB_REPOSITORY: repository,
+  // GITHUB_REPOSITORY: repository,
   GITHUB_TOKEN: token
 } = process.env;
+
+repository = 'gamekingv/AriaNg-build-crx';
 
 const sourceRepo = 'mayswind/AriaNg';
 
@@ -34,7 +36,14 @@ async function cancelWorkflow() {
   try {
     const { body: sourceRelease } = await client.get(`https://api.github.com/repos/${sourceRepo}/releases/latest`);
     console.log(sourceRelease.tag_name);
-    const { body: release } = await client.get(`https://api.github.com/repos/${repository}/releases/latest`);
+    let release = {};
+    try {
+      const { body } = await client.get(`https://api.github.com/repos/${repository}/releases/latest`);
+      release = body;
+    }
+    catch (error) {
+      if (!error.response || error.response.statusCode !== 404) throw error;
+    }
     if (sourceRelease.tag_name === release.tag_name) {
       await cancelWorkflow();
       await new Promise(res => setTimeout(() => res(), 60000));
@@ -59,5 +68,6 @@ async function cancelWorkflow() {
       console.log(error.response.body);
       process.exit(1);
     }
+    else console.log(error);
   }
 })();
