@@ -1,0 +1,25 @@
+{
+  "manifest_version": 2,
+  "name": "AriaNG",
+  "description": "AriaNG",
+  "icons": {
+    "64": "touchicon.png"
+  },
+  "browser_action": {
+    "browser_style": true,
+    "default_icon": {
+      "16": "touchicon.png",
+      "32": "touchicon.png",
+      "64": "touchicon.png"
+    }
+  },
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  },
+  "permissions": [
+    "contextMenus"
+  ],
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self';"
+}

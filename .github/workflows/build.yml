@@ -1,0 +1,84 @@
+name: build
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      # 安装环境
+      - name: Install Enviroment
+        run: |
+          sudo apt-get update
+          sudo apt-get install unar
+          yarn
+
+      # 检查并获取最新Release
+      - name: Check and Fetch
+        id: check
+        run: |
+          echo "::set-output name=version::$(node check.js)"
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      # 解压
+      - name: Decompression
+        run: |
+          unar source.zip
+
+      # 处理文件
+      - name: Parse
+        run: |
+          node parse.js
+
+      # 打包扩展
+      - name: Pack ZIP
+        uses: cardinalby/webext-buildtools-pack-extension-dir-action@v1
+        with:
+          extensionDir: 'source'
+          zipFilePath: 'build/extension.zip'
+
+      - name: Pack CRX
+        uses: cardinalby/webext-buildtools-chrome-crx-action@v2
+        with:
+          zipFilePath: 'build/extension.zip'
+          crxFilePath: 'build/extension.crx'
+          privateKey: ${{ secrets.CRX_PRIVATE_KEY }}
+          updateXmlPath: 'build/update.xml'
+          updateXmlCodebaseUrl: "https://github.com/${{ github.repository }}/releases/latest/download/extension.crx"
+
+      # 发布Release
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          tag_name: v${{ steps.check.outputs.version }}
+          release_name: v${{ steps.check.outputs.version }}
+          body: "自动更新到 v${{ steps.check.outputs.version }} 版本"
+          draft: false
+          prerelease: false
+      - name: Upload CRX
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./build/extension.crx
+          asset_name: extension.crx
+          asset_content_type: application/octet-stream
+      - name: Upload XML
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./build/update.xml
+          asset_name: update.xml
+          asset_content_type: application/xml
