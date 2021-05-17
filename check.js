@@ -7,11 +7,9 @@ const pipeline = promisify(stream.pipeline);
 
 const {
   GITHUB_RUN_ID: run_id,
-  // GITHUB_REPOSITORY: repository,
+  GITHUB_REPOSITORY: repository,
   GITHUB_TOKEN: token
 } = process.env;
-
-repository = 'gamekingv/AriaNg-build-crx';
 
 const sourceRepo = 'mayswind/AriaNg';
 
@@ -32,6 +30,10 @@ async function cancelWorkflow() {
   });
 }
 
+async function filterAssets(assets) {
+  return assets.filter(asset => !asset.name.includes('AllInOne'))[0];
+}
+
 (async () => {
   try {
     const { body: sourceRelease } = await client.get(`https://api.github.com/repos/${sourceRepo}/releases/latest`);
@@ -50,7 +52,7 @@ async function cancelWorkflow() {
     }
     const assetsURL = sourceRelease.assets_url;
     const { body: assets } = await client.get(assetsURL);
-    const asset = assets.filter(asset => !asset.name.includes('AllInOne'))[0];
+    const asset = filterAssets(assets);
     if (!asset) throw '获取源文件失败';
     const downloadURL = asset.browser_download_url;
     await pipeline(
