@@ -29,7 +29,8 @@ jobs:
       # 解压
       - name: Decompression
         run: |
-          unar source.zip
+          lsar 'source.zip'
+          unar 'source.zip'
 
       # 处理文件
       - name: Parse
