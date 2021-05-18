@@ -37,7 +37,8 @@ async function cancelWorkflow() {
 (async () => {
   try {
     const { body: sourceRelease } = await client.get(`https://api.github.com/repos/${sourceRepo}/releases/latest`);
-    console.log(sourceRelease.tag_name);
+    const sourceVersion = sourceRelease.tag_name.replace(/^v/, '');
+    console.log(sourceVersion);
     let release = {};
     try {
       const { body } = await client.get(`https://api.github.com/repos/${repository}/releases/latest`);
@@ -46,7 +47,7 @@ async function cancelWorkflow() {
     catch (error) {
       if (!error.response || error.response.statusCode !== 404) throw error;
     }
-    if (`v${sourceRelease.tag_name}` === release.tag_name) {
+    if (`v${sourceVersion}` === release.tag_name) {
       await cancelWorkflow();
       await new Promise(res => setTimeout(() => res(), 60000));
     }
@@ -61,7 +62,7 @@ async function cancelWorkflow() {
     );
     const manifest = JSON.parse(await fsp.readFile('manifest.json'));
     manifest.update_url = `https://github.com/${repository}/releases/latest/download/update.xml`;
-    manifest.version = sourceRelease.tag_name;
+    manifest.version = sourceVersion;
     await fsp.writeFile('manifest.json', JSON.stringify(manifest, null, 2));
   }
   catch (error) {
