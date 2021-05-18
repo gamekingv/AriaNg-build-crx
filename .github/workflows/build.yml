@@ -31,7 +31,6 @@ jobs:
       # 解压
       - name: Decompression
         run: |
-          lsar 'source.zip'
           unar 'source.zip'
 
       # 处理文件
@@ -48,7 +47,6 @@ jobs:
         with:
           extensionDir: 'source'
           zipFilePath: 'build/extension.zip'
-
       - name: Pack CRX
         uses: cardinalby/webext-buildtools-chrome-crx-action@v2
         with:
