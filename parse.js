@@ -1,11 +1,15 @@
 const fs = require('fs').promises;
 
+const {
+  GITHUB_REPOSITORY: repository
+} = process.env;
+
 (async () => {
   try {
-    const manifest = JSON.parse(await fs.readFile('manifest.json'));
+    
+    const manifest = JSON.parse(await fs.readFile('source/manifest.json'));
     manifest.update_url = `https://github.com/${repository}/releases/latest/download/update.xml`;
-    manifest.version = sourceVersion;
-    await fs.writeFile('manifest.json', JSON.stringify(manifest, null, 2));
+    await fs.writeFile('source/manifest.json', JSON.stringify(manifest, null, 2));
     const html = (await fs.readFile('source/index.html')).toString();
     const result = html
       .replace('</ul></li><li class="divider"></li><li><a class="toolbar"', '</ul></li><li class="divider"></li><li class="disabled" ng-class="{\'disabled\': !isTaskSelected()}" ng-controller="combineVideo"><a class="toolbar" title="合并视频" ng-click="combineSelectedVideo()"><i class="fa fa-compress"></i></a></li><li class="divider"></li><li><a class="toolbar"')
